@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIPA 2026 — Transbaia Transportes</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --brand: #1a3a5c;
+    --brand-light: #2563a8;
+    --accent: #e8b84b;
+    --accent-dark: #c49530;
+    --danger: #c0392b;
+    --success: #1a7a4a;
+    --bg: #f0f2f5;
+    --card: #ffffff;
+    --text: #1a1a2e;
+    --muted: #6b7280;
+    --border: #dde1e7;
+    --font-display: 'Bebas Neue', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--brand);
+    color: #fff;
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  }
+
+  .header-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .logo-block { display: flex; flex-direction: column; }
+  .logo-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .logo-sub {
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.7);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .header-divider { width: 1px; height: 40px; background: rgba(255,255,255,0.2); }
+
+  .nav-tabs {
+    display: flex;
+    gap: 4px;
+    margin-left: auto;
+  }
+
+  .nav-tab {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.65);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all .2s;
+    letter-spacing: .5px;
+  }
+  .nav-tab:hover { background: rgba(255,255,255,0.1); color: #fff; }
+  .nav-tab.active { background: var(--accent); color: var(--brand); font-weight: 600; }
+
+  /* MAIN */
+  main { max-width: 900px; margin: 0 auto; padding: 32px 20px; }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* CARDS */
+  .card {
+    background: var(--card);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+
+  .card-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    letter-spacing: 1px;
+    color: var(--brand);
+    margin-bottom: 6px;
+  }
+
+  .card-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  /* STATUS BANNER */
+  .status-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 20px;
+  }
+  .status-banner.open { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+  .status-banner.closed { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .status-banner.open .status-dot { background: #28a745; animation: pulse 2s infinite; }
+  .status-banner.closed .status-dot { background: #dc3545; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* CANDIDATE CARDS */
+  .candidates-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+
+  .candidate-card {
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all .2s;
+    text-align: center;
+    background: #fff;
+    position: relative;
+  }
+  .candidate-card:hover { border-color: var(--brand-light); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(37,99,168,0.1); }
+  .candidate-card.selected { border-color: var(--brand); background: #eef4ff; }
+  .candidate-card.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 8px; right: 10px;
+    font-size: 16px;
+    color: var(--brand);
+    font-weight: 700;
+  }
+
+  .candidate-avatar {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: var(--brand);
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-size: 26px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 10px;
+    overflow: hidden;
+    border: 3px solid var(--border);
+    flex-shrink: 0;
+  }
+  .candidate-avatar img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+
+  /* Upload foto */
+  .photo-upload-wrap {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .photo-preview {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: var(--brand);
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-size: 22px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+  }
+  .photo-preview img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+  .photo-upload-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px;
+    border: 1.5px dashed var(--brand-light);
+    border-radius: 8px;
+    background: #eef4ff;
+    color: var(--brand);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .photo-upload-btn:hover { background: #dce8ff; }
+  #new-photo { display: none; }
+
+  /* Avatar na apuração */
+  .result-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--brand);
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 2px solid var(--border);
+  }
+  .result-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+  .result-header { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+  .result-name-wrap { flex: 1; display: flex; justify-content: space-between; align-items: baseline; }
+
+  /* Foto na tabela admin */
+  .admin-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--brand);
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 1.5px solid var(--border);
+    vertical-align: middle;
+    display: inline-flex;
+  }
+  .admin-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+  .candidate-name { font-size: 15px; font-weight: 600; color: var(--text); }
+  .candidate-role { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .candidate-num {
+    display: inline-block;
+    margin-top: 8px;
+    background: var(--brand);
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-size: 18px;
+    letter-spacing: 2px;
+    padding: 2px 12px;
+    border-radius: 4px;
+  }
+
+  /* BUTTONS */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    border: none;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+  }
+  .btn-primary { background: var(--brand); color: #fff; }
+  .btn-primary:hover { background: var(--brand-light); }
+  .btn-primary:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+  .btn-accent { background: var(--accent); color: var(--brand); }
+  .btn-accent:hover { background: var(--accent-dark); }
+  .btn-danger { background: var(--danger); color: #fff; }
+  .btn-danger:hover { background: #a93226; }
+  .btn-success { background: var(--success); color: #fff; }
+  .btn-success:hover { background: #155d38; }
+  .btn-outline {
+    background: transparent;
+    color: var(--brand);
+    border: 1.5px solid var(--brand);
+  }
+  .btn-outline:hover { background: var(--brand); color: #fff; }
+  .btn-sm { padding: 8px 16px; font-size: 12px; }
+
+  /* FORM */
+  .form-group { margin-bottom: 16px; }
+  .form-label { display: block; font-size: 13px; font-weight: 600; color: var(--brand); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px; }
+  .form-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--text);
+    transition: border-color .2s;
+    background: #fff;
+  }
+  .form-input:focus { outline: none; border-color: var(--brand-light); }
+
+  /* RESULTS */
+  .result-item { margin-bottom: 16px; }
+  .result-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+  .result-name { font-size: 15px; font-weight: 600; }
+  .result-pct { font-family: var(--font-display); font-size: 22px; color: var(--brand); letter-spacing: 1px; }
+  .result-bar-bg { background: var(--border); border-radius: 4px; height: 12px; overflow: hidden; }
+  .result-bar { height: 12px; border-radius: 4px; background: var(--brand); transition: width 1s ease; }
+  .result-bar.leader { background: var(--accent-dark); }
+  .result-votes { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* ADMIN TABLE */
+  .table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .table th { text-align: left; padding: 10px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); border-bottom: 2px solid var(--border); font-weight: 600; }
+  .table td { padding: 12px; border-bottom: 1px solid var(--border); }
+  .table tr:last-child td { border-bottom: none; }
+
+  /* VOTED SCREEN */
+  .voted-screen {
+    text-align: center;
+    padding: 48px 24px;
+  }
+  .voted-icon {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: #d4edda;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 36px;
+  }
+  .voted-title { font-family: var(--font-display); font-size: 32px; color: var(--success); letter-spacing: 2px; margin-bottom: 8px; }
+  .voted-sub { font-size: 14px; color: var(--muted); line-height: 1.6; max-width: 340px; margin: 0 auto; }
+
+  /* STATS ROW */
+  .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+  .stat-card { background: var(--brand); color: #fff; border-radius: 10px; padding: 16px; text-align: center; }
+  .stat-num { font-family: var(--font-display); font-size: 32px; color: var(--accent); letter-spacing: 1px; }
+  .stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: .8px; opacity: .7; margin-top: 2px; }
+
+  /* TOAST */
+  #toast {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    background: var(--text);
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 999;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all .3s;
+    max-width: 320px;
+  }
+  #toast.show { transform: translateY(0); opacity: 1; }
+  #toast.success-toast { background: var(--success); }
+  #toast.error-toast { background: var(--danger); }
+
+  .empty-state { text-align: center; padding: 40px; color: var(--muted); font-size: 14px; }
+
+  /* ADMIN LOGIN */
+  .admin-login { max-width: 360px; margin: 0 auto; }
+
+  /* CONFIRM MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 200;
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal { background: #fff; border-radius: 12px; padding: 32px; max-width: 380px; width: 90%; text-align: center; }
+  .modal-title { font-family: var(--font-display); font-size: 24px; color: var(--brand); letter-spacing: 1px; margin-bottom: 8px; }
+  .modal-body { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 24px; }
+  .modal-candidate { font-size: 18px; font-weight: 600; color: var(--text); background: #eef4ff; padding: 10px 16px; border-radius: 8px; margin: 12px 0; }
+  .modal-actions { display: flex; gap: 12px; justify-content: center; }
+
+  @media (max-width: 600px) {
+    .stats-row { grid-template-columns: 1fr; }
+    .candidates-grid { grid-template-columns: 1fr 1fr; }
+    .nav-tab { padding: 8px 10px; font-size: 12px; }
+    .logo-title { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo-block">
+      <span class="logo-title">SIPA 2026</span>
+      <span class="logo-sub">Transbaia Transportes LTDA</span>
+    </div>
+    <div class="header-divider"></div>
+    <nav class="nav-tabs">
+      <button class="nav-tab active" onclick="showPage('vote')">🗳️ Votar</button>
+      <button class="nav-tab" onclick="showPage('results')">📊 Apuração</button>
+      <button class="nav-tab" onclick="showPage('admin')">⚙️ Admin</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- PÁGINA: VOTAR -->
+  <div id="page-vote" class="page active">
+    <div id="vote-status-banner" class="status-banner open">
+      <div class="status-dot"></div>
+      <span id="status-text">Votação aberta</span>
+    </div>
+
+    <div id="voted-screen" class="card" style="display:none">
+      <div class="voted-screen">
+        <div class="voted-icon">✅</div>
+        <div class="voted-title">Voto Registrado!</div>
+        <p class="voted-sub">Seu voto foi computado com sucesso. Você votou em <strong id="voted-in-name"></strong>.<br><br>Obrigado por participar da SIPA 2026!</p>
+        <br>
+        <button class="btn btn-outline" onclick="showPage('results')">Ver apuração em tempo real →</button>
+      </div>
+    </div>
+
+    <div id="vote-form">
+      <div class="card">
+        <div class="card-title">Escolha seu Candidato</div>
+        <div class="card-sub">Selecione um candidato e clique em confirmar. Cada dispositivo pode votar apenas uma vez.</div>
+        <div id="candidates-grid" class="candidates-grid">
+          <div class="empty-state">Nenhum candidato cadastrado ainda.</div>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:flex-end; margin-top: 4px;">
+        <button class="btn btn-accent" id="btn-confirm-vote" disabled onclick="openConfirmModal()">Confirmar Voto →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PÁGINA: APURAÇÃO -->
+  <div id="page-results" class="page">
+    <div class="card">
+      <div class="card-title">Apuração em Tempo Real</div>
+      <div class="card-sub">Resultados atualizados automaticamente a cada 10 segundos.</div>
+
+      <div class="stats-row" id="stats-row">
+        <div class="stat-card">
+          <div class="stat-num" id="stat-total">0</div>
+          <div class="stat-label">Total de Votos</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="stat-candidates">0</div>
+          <div class="stat-label">Candidatos</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="stat-leader">—</div>
+          <div class="stat-label">Na Frente</div>
+        </div>
+      </div>
+
+      <div id="results-list">
+        <div class="empty-state">Nenhum voto registrado ainda.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PÁGINA: ADMIN -->
+  <div id="page-admin" class="page">
+    <div id="admin-login-wrap" class="card admin-login">
+      <div class="card-title">Acesso Admin</div>
+      <div class="card-sub">Digite a senha de administrador para continuar.</div>
+      <div class="form-group">
+        <label class="form-label">Senha</label>
+        <input type="password" class="form-input" id="admin-pass-input" placeholder="Senha de acesso" onkeydown="if(event.key==='Enter') doAdminLogin()">
+      </div>
+      <button class="btn btn-primary" onclick="doAdminLogin()">Entrar</button>
+    </div>
+
+    <div id="admin-panel" style="display:none">
+      <!-- Controle da votação -->
+      <div class="card">
+        <div class="card-title">Controle da Votação</div>
+        <div class="card-sub">Abra ou feche a eleição. Enquanto fechada, os votos não são aceitos.</div>
+        <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+          <button class="btn btn-success" onclick="setVotingStatus(true)" id="btn-open-vote">▶ Abrir Votação</button>
+          <button class="btn btn-danger" onclick="setVotingStatus(false)" id="btn-close-vote">⏹ Fechar Votação</button>
+          <button class="btn btn-outline btn-sm" onclick="clearAllVotes()">🗑 Zerar votos</button>
+          <button class="btn btn-outline btn-sm" onclick="adminLogout()">Sair</button>
+        </div>
+      </div>
+
+      <!-- Adicionar candidato -->
+      <div class="card">
+        <div class="card-title">Cadastrar Candidato</div>
+
+        <div class="form-group">
+          <label class="form-label">Foto do candidato</label>
+          <div class="photo-upload-wrap">
+            <div class="photo-preview" id="new-photo-preview">
+              <span id="new-photo-initials">?</span>
+            </div>
+            <div>
+              <label class="photo-upload-btn" for="new-photo">
+                📷 Escolher foto
+              </label>
+              <input type="file" id="new-photo" accept="image/*" onchange="previewNewPhoto(this)">
+              <div style="font-size:12px;color:var(--muted);margin-top:6px">JPG, PNG ou WEBP — recomendado 200×200px</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div class="form-group">
+            <label class="form-label">Nome completo</label>
+            <input type="text" class="form-input" id="new-name" placeholder="Ex: João da Silva" oninput="updateNewPhotoInitials()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Cargo / Função</label>
+            <input type="text" class="form-input" id="new-role" placeholder="Ex: Motorista">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Número na urna</label>
+          <input type="number" class="form-input" id="new-num" placeholder="Ex: 10" style="max-width:160px">
+        </div>
+        <button class="btn btn-primary" onclick="addCandidate()">+ Adicionar Candidato</button>
+      </div>
+
+      <!-- Lista de candidatos -->
+      <div class="card">
+        <div class="card-title">Candidatos Cadastrados</div>
+        <div id="admin-candidates-table">
+          <div class="empty-state">Nenhum candidato cadastrado.</div>
+        </div>
+      </div>
+
+      <!-- Registro de votos -->
+      <div class="card">
+        <div class="card-title">Log de Dispositivos Votantes</div>
+        <div class="card-sub">Registro dos dispositivos que já votaram (anonimizado).</div>
+        <div id="admin-voters-table">
+          <div class="empty-state">Nenhum voto registrado.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal">
+    <div class="modal-title">Confirmar Voto</div>
+    <div class="modal-body">Você está prestes a votar em:</div>
+    <div class="modal-candidate" id="modal-candidate-name">—</div>
+    <div class="modal-body">Esta ação é irreversível. Você só pode votar uma vez.</div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeConfirmModal()">Cancelar</button>
+      <button class="btn btn-accent" onclick="submitVote()">Confirmar ✓</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────
+const ADMIN_PASSWORD = 'sipa2026admin';
+const STORAGE_KEY_CANDIDATES = 'sipa2026-candidates';
+const STORAGE_KEY_VOTES      = 'sipa2026-votes';
+const STORAGE_KEY_STATUS     = 'sipa2026-status';
+const STORAGE_KEY_VOTERS     = 'sipa2026-voters';
+
+// ─── STATE ────────────────────────────────────────────────
+let candidates = [];
+let votes = {};        // { candidateId: count }
+let votingOpen = true;
+let voters = [];       // [{ fp, time, candidateId }]
+let selectedId = null;
+let adminLogged = false;
+let alreadyVoted = false;
+let votedFor = null;
+
+// ─── FINGERPRINT ──────────────────────────────────────────
+function getFingerprint() {
+  const ua = navigator.userAgent;
+  const lang = navigator.language;
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const screen = `${window.screen.width}x${window.screen.height}x${window.screen.colorDepth}`;
+  const cores = navigator.hardwareConcurrency || 0;
+  const mem = navigator.deviceMemory || 0;
+  const plugins = Array.from(navigator.plugins || []).map(p => p.name).join(',');
+
+  let canvasHash = '';
+  try {
+    const c = document.createElement('canvas');
+    c.width = 200; c.height = 50;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#1a3a5c';
+    ctx.fillRect(0, 0, 200, 50);
+    ctx.fillStyle = '#e8b84b';
+    ctx.font = '14px Arial';
+    ctx.fillText('SIPA2026fingerprint', 10, 30);
+    canvasHash = c.toDataURL().slice(-40);
+  } catch(e) {}
+
+  const raw = `${ua}|${lang}|${tz}|${screen}|${cores}|${mem}|${plugins}|${canvasHash}`;
+  let hash = 0;
+  for (let i = 0; i < raw.length; i++) {
+    hash = ((hash << 5) - hash) + raw.charCodeAt(i);
+    hash |= 0;
+  }
+  return 'fp_' + Math.abs(hash).toString(36);
+}
+
+const MY_FP = getFingerprint();
+
+// ─── STORAGE (uses window.storage if available, else localStorage) ───
+async function storageGet(key) {
+  if (window.storage) {
+    try { const r = await window.storage.get(key, true); return r ? r.value : null; } catch(e) { return null; }
+  }
+  return localStorage.getItem(key);
+}
+async function storageSet(key, val) {
+  if (window.storage) {
+    try { await window.storage.set(key, val, true); } catch(e) {}
+  }
+  localStorage.setItem(key, val);
+}
+
+// ─── LOAD & SAVE ──────────────────────────────────────────
+async function loadData() {
+  const c = await storageGet(STORAGE_KEY_CANDIDATES);
+  candidates = c ? JSON.parse(c) : [];
+
+  const v = await storageGet(STORAGE_KEY_VOTES);
+  votes = v ? JSON.parse(v) : {};
+
+  const s = await storageGet(STORAGE_KEY_STATUS);
+  votingOpen = s !== null ? JSON.parse(s) : true;
+
+  const vt = await storageGet(STORAGE_KEY_VOTERS);
+  voters = vt ? JSON.parse(vt) : [];
+
+  // Verificar se este dispositivo já votou
+  const myVote = voters.find(v => v.fp === MY_FP);
+  if (myVote) {
+    alreadyVoted = true;
+    votedFor = myVote.candidateId;
+  }
+
+  renderAll();
+}
+
+async function saveData() {
+  await storageSet(STORAGE_KEY_CANDIDATES, JSON.stringify(candidates));
+  await storageSet(STORAGE_KEY_VOTES,      JSON.stringify(votes));
+  await storageSet(STORAGE_KEY_STATUS,     JSON.stringify(votingOpen));
+  await storageSet(STORAGE_KEY_VOTERS,     JSON.stringify(voters));
+}
+
+// ─── RENDER ───────────────────────────────────────────────
+function renderAll() {
+  renderVotePage();
+  renderResults();
+  if (adminLogged) renderAdminPanel();
+  renderStatusBanner();
+}
+
+function renderStatusBanner() {
+  const banner = document.getElementById('vote-status-banner');
+  const text = document.getElementById('status-text');
+  if (votingOpen) {
+    banner.className = 'status-banner open';
+    text.textContent = 'Votação aberta — escolha seu candidato';
+  } else {
+    banner.className = 'status-banner closed';
+    text.textContent = 'Votação encerrada';
+  }
+}
+
+function renderVotePage() {
+  const grid = document.getElementById('candidates-grid');
+  const votedScreen = document.getElementById('voted-screen');
+  const voteForm = document.getElementById('vote-form');
+
+  if (alreadyVoted) {
+    votedScreen.style.display = 'block';
+    voteForm.style.display = 'none';
+    const c = candidates.find(c => c.id === votedFor);
+    document.getElementById('voted-in-name').textContent = c ? c.name : 'Candidato';
+    return;
+  }
+
+  if (!votingOpen) {
+    grid.innerHTML = '<div class="empty-state">⏹ A votação está encerrada.</div>';
+    document.getElementById('btn-confirm-vote').disabled = true;
+    return;
+  }
+
+  if (candidates.length === 0) {
+    grid.innerHTML = '<div class="empty-state">Nenhum candidato cadastrado ainda.</div>';
+    document.getElementById('btn-confirm-vote').disabled = true;
+    return;
+  }
+
+  grid.innerHTML = candidates.map(c => `
+    <div class="candidate-card ${selectedId === c.id ? 'selected' : ''}" onclick="selectCandidate('${c.id}')">
+      <div class="candidate-avatar" style="margin:0 auto 12px">
+        ${c.photo ? `<img src="${c.photo}" alt="${c.name}">` : initials(c.name)}
+      </div>
+      <div class="candidate-name">${c.name}</div>
+      <div class="candidate-role">${c.role}</div>
+      <div class="candidate-num">${c.number}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('btn-confirm-vote').disabled = !selectedId;
+}
+
+function renderResults() {
+  const total = Object.values(votes).reduce((a, b) => a + b, 0);
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-candidates').textContent = candidates.length;
+
+  let leaderName = '—';
+  let maxVotes = -1;
+  candidates.forEach(c => {
+    const v = votes[c.id] || 0;
+    if (v > maxVotes) { maxVotes = v; leaderName = c.name.split(' ')[0]; }
+  });
+  document.getElementById('stat-leader').textContent = leaderName;
+
+  const list = document.getElementById('results-list');
+  if (candidates.length === 0) {
+    list.innerHTML = '<div class="empty-state">Nenhum candidato cadastrado.</div>';
+    return;
+  }
+
+  const sorted = [...candidates].sort((a, b) => (votes[b.id] || 0) - (votes[a.id] || 0));
+  list.innerHTML = sorted.map((c, i) => {
+    const v = votes[c.id] || 0;
+    const pct = total > 0 ? ((v / total) * 100).toFixed(1) : '0.0';
+    const avatarHtml = c.photo
+      ? `<img src="${c.photo}" alt="${c.name}">`
+      : initials(c.name);
+    return `
+      <div class="result-item">
+        <div class="result-header">
+          <div class="result-avatar">${avatarHtml}</div>
+          <div class="result-name-wrap">
+            <span class="result-name">${i === 0 && v > 0 ? '🏆 ' : ''}${c.name} <span style="font-size:12px;color:var(--muted);font-weight:400">(nº ${c.number})</span></span>
+            <span class="result-pct">${pct}%</span>
+          </div>
+        </div>
+        <div class="result-bar-bg">
+          <div class="result-bar ${i === 0 && v > 0 ? 'leader' : ''}" style="width:${pct}%"></div>
+        </div>
+        <div class="result-votes">${v} voto${v !== 1 ? 's' : ''}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderAdminPanel() {
+  // Candidatos
+  const el = document.getElementById('admin-candidates-table');
+  if (candidates.length === 0) {
+    el.innerHTML = '<div class="empty-state">Nenhum candidato.</div>';
+  } else {
+    el.innerHTML = `<table class="table">
+      <thead><tr><th>Foto</th><th>Nº</th><th>Nome</th><th>Cargo</th><th>Votos</th><th></th></tr></thead>
+      <tbody>${candidates.map(c => `
+        <tr>
+          <td>
+            <div class="admin-avatar">
+              ${c.photo ? `<img src="${c.photo}" alt="${c.name}">` : initials(c.name)}
+            </div>
+          </td>
+          <td><strong>${c.number}</strong></td>
+          <td>${c.name}</td>
+          <td style="color:var(--muted)">${c.role}</td>
+          <td><strong>${votes[c.id] || 0}</strong></td>
+          <td><button class="btn btn-danger btn-sm" onclick="removeCandidate('${c.id}')">Remover</button></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+  }
+
+  // Voters log
+  const ve = document.getElementById('admin-voters-table');
+  if (voters.length === 0) {
+    ve.innerHTML = '<div class="empty-state">Nenhum voto registrado.</div>';
+  } else {
+    ve.innerHTML = `<table class="table">
+      <thead><tr><th>#</th><th>Dispositivo (hash)</th><th>Candidato</th><th>Horário</th></tr></thead>
+      <tbody>${voters.map((v, i) => {
+        const c = candidates.find(c => c.id === v.candidateId);
+        return `<tr>
+          <td>${i + 1}</td>
+          <td style="font-family:monospace;font-size:12px">${v.fp}</td>
+          <td>${c ? c.name : '?'}</td>
+          <td style="color:var(--muted);font-size:12px">${new Date(v.time).toLocaleString('pt-BR')}</td>
+        </tr>`;
+      }).join('')}
+      </tbody>
+    </table>`;
+  }
+}
+
+// ─── VOTING ───────────────────────────────────────────────
+function selectCandidate(id) {
+  if (!votingOpen) return;
+  selectedId = id;
+  renderVotePage();
+}
+
+function openConfirmModal() {
+  if (!selectedId) return;
+  const c = candidates.find(c => c.id === selectedId);
+  document.getElementById('modal-candidate-name').textContent = c ? `${c.name} (nº ${c.number})` : '';
+  document.getElementById('confirm-modal').classList.add('show');
+}
+
+function closeConfirmModal() {
+  document.getElementById('confirm-modal').classList.remove('show');
+}
+
+async function submitVote() {
+  closeConfirmModal();
+  if (!selectedId || !votingOpen) { showToast('Votação encerrada.', 'error'); return; }
+  if (alreadyVoted) { showToast('Você já votou!', 'error'); return; }
+
+  // Check again server-side (storage)
+  const freshVoters = await storageGet(STORAGE_KEY_VOTERS);
+  const parsedVoters = freshVoters ? JSON.parse(freshVoters) : [];
+  if (parsedVoters.find(v => v.fp === MY_FP)) {
+    alreadyVoted = true;
+    showToast('Já existe um voto deste dispositivo!', 'error');
+    renderVotePage();
+    return;
+  }
+
+  votes[selectedId] = (votes[selectedId] || 0) + 1;
+  voters.push({ fp: MY_FP, time: Date.now(), candidateId: selectedId });
+  alreadyVoted = true;
+  votedFor = selectedId;
+
+  await saveData();
+  showToast('Voto registrado com sucesso!', 'success');
+  renderAll();
+}
+
+// ─── ADMIN ────────────────────────────────────────────────
+function doAdminLogin() {
+  const v = document.getElementById('admin-pass-input').value;
+  if (v === ADMIN_PASSWORD) {
+    adminLogged = true;
+    document.getElementById('admin-login-wrap').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'block';
+    renderAdminPanel();
+  } else {
+    showToast('Senha incorreta.', 'error');
+  }
+}
+
+function adminLogout() {
+  adminLogged = false;
+  document.getElementById('admin-login-wrap').style.display = 'block';
+  document.getElementById('admin-panel').style.display = 'none';
+  document.getElementById('admin-pass-input').value = '';
+}
+
+async function setVotingStatus(open) {
+  votingOpen = open;
+  await saveData();
+  renderAll();
+  showToast(open ? 'Votação aberta!' : 'Votação encerrada!', open ? 'success' : 'error');
+}
+
+// ─── FOTO ─────────────────────────────────────────────────
+let newPhotoBase64 = null;
+
+function updateNewPhotoInitials() {
+  const name = document.getElementById('new-name').value.trim();
+  const el = document.getElementById('new-photo-initials');
+  if (el && !newPhotoBase64) el.textContent = name ? initials(name) : '?';
+}
+
+function previewNewPhoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    // Redimensionar via canvas para reduzir tamanho (max 200x200)
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const size = Math.min(img.width, img.height);
+      canvas.width = 200; canvas.height = 200;
+      const ctx = canvas.getContext('2d');
+      const sx = (img.width - size) / 2;
+      const sy = (img.height - size) / 2;
+      ctx.drawImage(img, sx, sy, size, size, 0, 0, 200, 200);
+      newPhotoBase64 = canvas.toDataURL('image/jpeg', 0.82);
+      // Atualizar preview
+      const prev = document.getElementById('new-photo-preview');
+      prev.innerHTML = `<img src="${newPhotoBase64}" alt="preview">`;
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+async function addCandidate() {
+  const name = document.getElementById('new-name').value.trim();
+  const role = document.getElementById('new-role').value.trim();
+  const num  = document.getElementById('new-num').value.trim();
+  if (!name || !num) { showToast('Preencha nome e número.', 'error'); return; }
+  if (candidates.find(c => c.number === num)) { showToast('Número já em uso.', 'error'); return; }
+
+  candidates.push({
+    id: 'c_' + Date.now(),
+    name, role: role || '—', number: num,
+    photo: newPhotoBase64 || null
+  });
+  document.getElementById('new-name').value = '';
+  document.getElementById('new-role').value = '';
+  document.getElementById('new-num').value = '';
+  document.getElementById('new-photo').value = '';
+  document.getElementById('new-photo-preview').innerHTML = '<span id="new-photo-initials">?</span>';
+  newPhotoBase64 = null;
+  await saveData();
+  renderAll();
+  showToast('Candidato adicionado!', 'success');
+}
+
+async function removeCandidate(id) {
+  if (!confirm('Remover este candidato e todos seus votos?')) return;
+  candidates = candidates.filter(c => c.id !== id);
+  delete votes[id];
+  voters = voters.filter(v => v.candidateId !== id);
+  await saveData();
+  renderAll();
+  showToast('Candidato removido.', 'error');
+}
+
+async function clearAllVotes() {
+  if (!confirm('Zerar TODOS os votos? Esta ação não pode ser desfeita.')) return;
+  votes = {};
+  voters = [];
+  alreadyVoted = false;
+  votedFor = null;
+  selectedId = null;
+  await saveData();
+  renderAll();
+  showToast('Votos zerados!', 'error');
+}
+
+// ─── NAV ──────────────────────────────────────────────────
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  const tabs = { vote: 0, results: 1, admin: 2 };
+  document.querySelectorAll('.nav-tab')[tabs[name]].classList.add('active');
+  if (name === 'results') renderResults();
+}
+
+// ─── UTILS ────────────────────────────────────────────────
+function initials(name) {
+  return name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
+}
+
+let toastTimer;
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show' + (type === 'success' ? ' success-toast' : type === 'error' ? ' error-toast' : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.className = ''; }, 3500);
+}
+
+// ─── AUTO-REFRESH RESULTS ─────────────────────────────────
+setInterval(async () => {
+  const c = await storageGet(STORAGE_KEY_CANDIDATES);
+  const v = await storageGet(STORAGE_KEY_VOTES);
+  const s = await storageGet(STORAGE_KEY_STATUS);
+  if (c) candidates = JSON.parse(c);
+  if (v) votes = JSON.parse(v);
+  if (s !== null) votingOpen = JSON.parse(s);
+  const page = document.querySelector('.page.active');
+  if (page && page.id === 'page-results') renderResults();
+  renderStatusBanner();
+}, 10000);
+
+// ─── INIT ─────────────────────────────────────────────────
+loadData();
+</script>
+</body>
+</html>
